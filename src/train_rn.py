@@ -2,6 +2,7 @@ import numpy as np
 import argparse, sys, os, time
 import csv
 
+import comet_ml
 import tensorflow as tf
 if int(tf.__version__.split('.')[1]) >= 14:
     tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
@@ -15,7 +16,7 @@ from datasets import UT, SBU, NTU, NTU_V2, YMJA
 from datasets.data_generator import DataGenerator
 from models.rn import get_model, fuse_rn
 from misc.utils import read_config
-from misc.custom_callbacks import RedirectModel, Evaluate
+from misc.custom_callbacks import RedirectModel, Train, Evaluate
 
 from sklearn.metrics import classification_report, confusion_matrix
 
@@ -168,7 +169,15 @@ def f1_m(y_true, y_pred):
 def train_model(training_model, model, verbose, learning_rate, output_path, checkpoint_period, 
         batch_size, epochs, use_data_gen, train_data, val_data, subsample_ratio,
         use_earlyStopping=True, data_len = None, return_attention=False):
-    
+    '''
+    self.experiment = comet_ml.Experiment(
+                                project_name='inter-rel-net',
+                                auto_metric_logging=True,
+                                auto_param_logging=True,
+                                auto_histogram_weight_logging=True,
+                                auto_histogram_gradient_logging=True,
+                                auto_histogram_activation_logging=True)
+    '''
     if verbose > 0:
         print ("Compiling model...")
     #todo check here
@@ -209,7 +218,11 @@ def train_model(training_model, model, verbose, learning_rate, output_path, chec
         eval_callback = Evaluate(val_generator, "val")
         eval_callback = RedirectModel(eval_callback, model)
         callbacks_list.append(eval_callback)
-        
+
+        train_callback = Train(train_generator, "train")
+        train_callback = RedirectModel(train_callback, model)
+        callbacks_list.append(train_callback)
+
         validation_steps = None
 
         steps_per_epoch = (None if subsample_ratio is None else
@@ -223,7 +236,7 @@ def train_model(training_model, model, verbose, learning_rate, output_path, chec
             epochs=epochs,
             steps_per_epoch=steps_per_epoch,
             callbacks=callbacks_list,
-            validation_data=None,
+            validation_data=val_generator,
             validation_steps=validation_steps,
             workers=8, max_queue_size=30, # Default is 10
             use_multiprocessing=True,

@@ -1,3 +1,5 @@
+import comet_ml
+
 import numpy as np
 import argparse, sys, os, time
 import progressbar
@@ -192,7 +194,7 @@ def train_temp_rn(output_path, dataset_name, model_kwargs, data_kwargs,
     if 'return_attention' in model_kwargs:
         return_attention = model_kwargs['return_attention']
     
-    fit_history = train_model(model=model, verbose=verbose, learning_rate=learning_rate, 
+    fit_history = train_model(training_model=model, model=model, verbose=verbose, learning_rate=learning_rate, 
         output_path=output_path, checkpoint_period=checkpoint_period, 
         batch_size=batch_size, epochs=epochs, use_data_gen=use_data_gen, 
         train_data=train_data, val_data=val_data, subsample_ratio=subsample_ratio,  return_attention=return_attention)
@@ -360,7 +362,7 @@ def train_fused_temp_rn(output_path, dataset_name, dataset_fold,
     if initial_weights is not None:
         model.load_weights(initial_weights)
     
-    fit_history = train_model(model=model, verbose=verbose, learning_rate=learning_rate, 
+    fit_history = train_model(training_model=model, model=model, verbose=verbose, learning_rate=learning_rate, 
         output_path=output_path, checkpoint_period=checkpoint_period, 
         batch_size=batch_size, epochs=epochs, use_data_gen=use_data_gen, 
         train_data=train_data, val_data=val_data, subsample_ratio=subsample_ratio,

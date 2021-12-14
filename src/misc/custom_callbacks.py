@@ -52,6 +52,7 @@ class Evaluate(keras.callbacks.Callback):
         self,
         generator,
         mode,
+        experiment=None,
         verbose=1
     ):
         """ Evaluate a given dataset using a given model at the end of every epoch during training.
@@ -59,11 +60,34 @@ class Evaluate(keras.callbacks.Callback):
         self.generator       = generator
         self.mode = mode
         self.verbose         = verbose
-
+        self.experiment = experiment
         super(Evaluate, self).__init__()
 
     def on_epoch_end(self, epoch, logs=None):
-        print("\nevaluating model!\n")
-
+        print(f"\nEnding Epoch {epoch}")
+        #self.experiment = Experiment(
         metrics = self.model.evaluate_generator(self.generator, steps=None, max_queue_size=10, workers=8)
-        print(f'\n\nmetrics is {metrics}\n\n')
+        print(f'\n\nValidation metrics \t {metrics}\n\n')
+
+
+class Train(keras.callbacks.Callback):
+    def __init__(
+        self,
+        generator,
+        mode,
+        experiment=None,
+        verbose=1
+    ):
+        """ Train metrics.
+        """
+        self.generator       = generator
+        self.mode = mode
+        self.verbose         = verbose
+        self.experiment = experiment
+        super(Train, self).__init__()
+
+    def on_epoch_end(self, epoch, logs=None):
+        print(f"\nEnding Epoch {epoch}")
+        #self.experiment = Experiment(
+        metrics = self.model.evaluate_generator(self.generator, steps=None, max_queue_size=10, workers=8)
+        print(f'\n\nTrain metrics \t {metrics}\n\n')

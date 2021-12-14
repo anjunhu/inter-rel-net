@@ -30,7 +30,7 @@ class IRNAttention(keras.layers.Layer):
         inputs = tf.transpose(tf.stack(inputs), perm=[1,0,2])
         e = K.tanh(K.dot(inputs,self.w1))
         e2 = K.dot(e, self.w2)
-        a = K.softmax(e2, axis=1)
+        a = e2 #K.softmax(e2, axis=1)
         output = inputs*a
         ##return the ouputs. 'a' is the set of attention weights
         ##the second variable is the 'attention adjusted o/p state' or context

@@ -3,10 +3,10 @@ import numpy as np
 import glob
 import os
 
-if 'SLURM_TMPDIR' in os.environ.keys():
+if False: #'SLURM_TMPDIR' in os.environ.keys():
     DATA_DIR = f'{os.environ["SLURM_TMPDIR"]}/nturgbd_skeletons'
 else:
-    DATA_DIR = '/usr/local/data02/faskari/inter-rel-net/data/ntu/'
+    DATA_DIR = '/home/anjunhu/projects/def-mudl/anjunhu/inter-rel-net/data/ntu/'
 
 """ Folder structure
     descs.csv
